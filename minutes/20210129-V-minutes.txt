@@ -1,0 +1,52 @@
+Date: 2021/01/29
+Task Group: Vector Extension
+Chair: Krste Asanovic
+Co-Chair: Roger Espasa
+Number of Attendees: ~16
+Current issues on github: https://github.com/riscv/riscv-v-spec
+
+# Meetings
+
+Meetings will continue in the regular Friday time slot as given on the
+task groups' Google calendar.
+
+# v0.10 release
+
+Version v0.10 (zero-point-ten) is tagged in repo, incorporating all
+specification changes agreed to date.  A numbered version was
+requested by toolchain folks to help with their release process.  An
+archived pdf build of v0.10 is available at:
+
+https://github.com/riscv/riscv-v-spec/releases/download/v0.10/riscv-v-spec-0.10.pdf
+
+This version is intended to provide a stable milestone for internal
+development, but is not ready for public review or ratification.
+However, the intent is that there are no substantial changes in
+instruction specifications before reaching frozen v1.0 status for
+public review, though of course there cannot be any guarantees.  The
+repo version name has been updated for the next stage of editing.
+
+Issues discussed:
+
+#623  Round Float to integer as float
+
+The current ISA spec does not have an instruction that rounds a float
+to an integer but leaving result as a float (IEEE RoundToIntegral*).
+The following five vector instruction sequence was quickly proposed,
+but not checked for correctness or completeness:
+    vfcvt.rtz.x.f.v v8, v4     # Round to integer of same width (could use frm)
+    vfcvt.f.x.v v8, v8         # Round back to float of same width
+    vfabs.f.f.v v12, v4        # Get magnitude of original value.
+    vmfgt.vf v0, v4, f0        # Is large integer already? f0 has threshold.
+    vmerge.vvm v4, v8, v4, v0  # Leave alone if already an integer
+
+Group was to evaluate correct equivalent sequence and to determine
+relative importance of supporting the operation directly.
+
+#550 Zve* subsets
+
+There was discussion on the exact composition of the Zve* subsets,
+though mostly there was agreement with decisions in earlier meetings.
+One question is whether multiplies that produce the upper
+word of a ELEN*ELEN-bit product (vmulh* and vsmul*) should be mandated
+on all embedded subsets when ELEN>=64.
